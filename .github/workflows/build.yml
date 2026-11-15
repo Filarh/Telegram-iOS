@@ -36,6 +36,10 @@ jobs:
       - name: Build the App
         run: |
           set -x
+          # the bundled test provisioning profiles expired on 2026-10-30: build with the clock before that
+          sudo systemsetup -setusingnetworktime off || true
+          sudo date 101512002026
+          date
           SOURCE_DIR=/Users/Shared/telegram-ios
           BAZEL_USER_ROOT="/private/var/tmp/_bazel_containerhost"
           cd $SOURCE_DIR
@@ -49,8 +53,6 @@ jobs:
             --configurationPath="build-system/appstore-configuration.json" \
             --codesigningInformationPath=build-system/fake-codesigning \
             --configuration=release_arm64 \
-            --disableProvisioningProfiles \
-            --disableExtensions \
             --buildNumber="$BUILD_NUMBER"
           mkdir -p build/artifacts
           for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/Telegram.ipa; do
