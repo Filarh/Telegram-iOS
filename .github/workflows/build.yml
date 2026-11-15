@@ -55,9 +55,8 @@ jobs:
             --configuration=release_arm64 \
             --buildNumber="$BUILD_NUMBER"
           mkdir -p build/artifacts
-          for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/Telegram.ipa; do
-            cp "$f" build/artifacts/
-          done
+          cp -L bazel-bin/Telegram/Telegram.ipa build/artifacts/
+          ls -la build/artifacts
 
       - uses: actions/upload-artifact@v4
         with:
