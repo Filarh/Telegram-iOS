@@ -11,6 +11,14 @@ public let internal_isHardwareAv1Supported: Bool = {
 }()
 #endif
 
+private let internal_isHardwareH264Supported: Bool = {
+    return VTIsHardwareDecodeSupported(kCMVideoCodecType_H264)
+}()
+
+private let internal_isHardwareHevcSupported: Bool = {
+    return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC)
+}()
+
 public enum MediaDataReaderReadSampleBufferResult {
     case frame(CMSampleBuffer)
     case waitingForMoreData
@@ -86,7 +94,7 @@ public final class FFMpegMediaDataReaderV2: MediaDataReader {
                 #if targetEnvironment(simulator)
                 useHardwareAcceleration = false
                 #else
-                useHardwareAcceleration = true
+                useHardwareAcceleration = codecName == "h264" ? internal_isHardwareH264Supported : internal_isHardwareHevcSupported
                 #endif
             }
             if (codecName == "av1" || codecName == "av01") {

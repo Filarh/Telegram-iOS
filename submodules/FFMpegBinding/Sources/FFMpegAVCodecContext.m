@@ -6,8 +6,15 @@
 #import "libavformat/avformat.h"
 #import "libavcodec/avcodec.h"
 
-static enum AVPixelFormat getPreferredPixelFormat(__unused AVCodecContext *ctx, __unused const enum AVPixelFormat *pix_fmts) {
-    return AV_PIX_FMT_VIDEOTOOLBOX;
+// get_format must return one of the offered formats: if VideoToolbox init fails,
+// libavcodec calls it again without AV_PIX_FMT_VIDEOTOOLBOX (avcodec.h, get_format).
+static enum AVPixelFormat getPreferredPixelFormat(AVCodecContext *ctx, const enum AVPixelFormat *pix_fmts) {
+    for (const enum AVPixelFormat *p = pix_fmts; *p != AV_PIX_FMT_NONE; p++) {
+        if (*p == AV_PIX_FMT_VIDEOTOOLBOX) {
+            return *p;
+        }
+    }
+    return ctx->sw_pix_fmt;
 }
 
 @interface FFMpegAVCodecContext () {
